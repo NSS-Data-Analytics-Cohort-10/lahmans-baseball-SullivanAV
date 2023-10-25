@@ -20,7 +20,7 @@ WHERE playerid= 'gaedeed01'
 --SLA
 
 -- 3. Find all players in the database who played at Vanderbilt University. Create a list showing each player’s first and last names as well as the total salary they earned in the major leagues. Sort this list in descending order by the total salary earned. Which Vanderbilt player earned the most money in the majors?
-SELECT *
+SELECT schoolname, namefirst, namelast, salary
 FROM schools
 LEFT JOIN collegeplaying AS c
 USING (schoolid)
@@ -28,11 +28,46 @@ LEFT JOIN people AS p
 ON c.playerid=p.playerid
 LEFT JOIN salaries AS s
 ON p.playerid=s.playerid
-WHERE schoolname = 'Vanderbilt University'
+WHERE schoolname = 'Vanderbilt University' 
 ORDER BY salary DESC
 --David Price
 
 -- 4. Using the fielding table, group players into three groups based on their position: label players with position OF as "Outfield", those with position "SS", "1B", "2B", and "3B" as "Infield", and those with position "P" or "C" as "Battery". Determine the number of putouts made by each of these three groups in 2016.
+SELECT pos,po,
+CASE WHEN pos = 'OF' THEN 'O'
+END AS outfield, SUM po,
+CASE WHEN pos = 'SS' THEN 'I'
+WHEN pos= '1B' THEN 'I'
+WHEN pos= '2B' THEN 'I'
+WHEN pos= '3B' THEN 'I'
+END AS infield, SUM po,
+CASE WHEN pos= 'P' THEN 'B'
+WHEN pos= 'C' THEN 'B'
+END AS battery, SUM po,
+FROM fielding
+WHERE yearid= '2016'
+GROUP BY fielding.pos, po
+
+SELECT po,pos, 
+(SELECT pos
+FROM fielding
+WHERE pos= 'ss') AS outfield,
+(SELECT pos
+FROM fielding
+WHERE pos='3B')AS infield
+FROM fielding
+
+SELECT pos
+
+
+
+CASE WHEN pos= '3B' THEN 'Infield'
+END AS infield,
+CASE WHEN pos= 'P' THEN 'Battery'
+WHEN pos= 'C' THEN 'Battery'
+END AS battery
+FROM fielding
+
    
 -- 5. Find the average number of strikeouts per game by decade since 1920. Round the numbers you report to 2 decimal places. Do the same for home runs per game. Do you see any trends?
    
