@@ -47,10 +47,69 @@ WHERE yearid= '2016'
 GROUP BY position
    
 -- 5. Find the average number of strikeouts per game by decade since 1920. Round the numbers you report to 2 decimal places. Do the same for home runs per game. Do you see any trends?
+SELECT
+CASE WHEN yearid BETWEEN 1920 AND 1929 THEN '20s'
+WHEN yearid BETWEEN 1930 AND 1939 THEN '30s'
+WHEN yearid BETWEEN 1940 AND 1949 THEN '40s'
+WHEN yearid BETWEEN 1950 AND 1959 THEN '50s'
+WHEN yearid BETWEEN 1960 AND 1969 THEN '60s'
+WHEN yearid BETWEEN 1970 AND 1979 THEN '70s'
+WHEN yearid BETWEEN 1980 AND 1989 THEN '80s'
+WHEN yearid BETWEEN 1990 AND 1999 THEN '90s'
+WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
+WHEN yearid BETWEEN 2010 AND 2019 THEN '2010s'
+END AS decade, ROUND(AVG(so/g),2)
+FROM teams
+GROUP BY teams.yearid
+
+SELECT
+CASE WHEN yearid BETWEEN 1920 AND 1929 THEN '20s'
+WHEN yearid BETWEEN 1930 AND 1939 THEN '30s'
+WHEN yearid BETWEEN 1940 AND 1949 THEN '40s'
+WHEN yearid BETWEEN 1950 AND 1959 THEN '50s'
+WHEN yearid BETWEEN 1960 AND 1969 THEN '60s'
+WHEN yearid BETWEEN 1970 AND 1979 THEN '70s'
+WHEN yearid BETWEEN 1980 AND 1989 THEN '80s'
+WHEN yearid BETWEEN 1990 AND 1999 THEN '90s'
+WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
+WHEN yearid BETWEEN 2010 AND 2019 THEN '2010s'
+END AS decade, ROUND(AVG(hr/g),2)
+FROM teams
+GROUP BY teams.yearid
+--There are much more strikeouts
+
+SELECT 
+CASE WHEN yearid BETWEEN 1920 AND 1929 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 1930 AND 1939 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 1940 AND 1949 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 1950 AND 1959 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 1960 AND 1969 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 1970 AND 1979 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 1980 AND 1989 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 1990 AND 1999 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 2000 AND 2009 THEN ROUND(AVG(so/g),2)
+WHEN yearid BETWEEN 2010 AND 2019 THEN ROUND(AVG(so/g),2) END AS decade
+FROM teams
+GROUP BY teams.yearid
+
+
+SELECT ROUND(AVG(so/g),2)
+FROM teams
+WHERE yearid BETWEEN 1950 AND 1959
+
+SELECT ROUND(AVG(so/g),2)
+FROM batting
+WHERE yearid BETWEEN 1960 AND 1969
+
+SELECT ROUND(AVG(so/g),2)
+FROM batting
+WHERE yearid BETWEEN 2020 AND 2024
 
 
 -- 6. Find the player who had the most success stealing bases in 2016, where __success__ is measured as the percentage of stolen base attempts which are successful. (A stolen base attempt results either in a stolen base or being caught stealing.) Consider only players who attempted _at least_ 20 stolen bases.
-	
+
+
+
 
 -- 7.  From 1970 – 2016, what is the largest number of wins for a team that did not win the world series? What is the smallest number of wins for a team that did win the world series? Doing this will probably result in an unusually small number of wins for a world series champion – determine why this is the case. Then redo your query, excluding the problem year. How often from 1970 – 2016 was it the case that a team with the most wins also won the world series? What percentage of the time?
 
