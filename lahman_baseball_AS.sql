@@ -60,7 +60,7 @@ WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
 WHEN yearid BETWEEN 2010 AND 2019 THEN '2010s'
 END AS decade, ROUND(AVG(so/g),2)
 FROM teams
-GROUP BY teams.yearid
+GROUP BY decade
 
 SELECT
 CASE WHEN yearid BETWEEN 1920 AND 1929 THEN '20s'
@@ -75,39 +75,16 @@ WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
 WHEN yearid BETWEEN 2010 AND 2019 THEN '2010s'
 END AS decade, ROUND(AVG(hr/g),2)
 FROM teams
-GROUP BY teams.yearid
---There are much more strikeouts
-
-SELECT 
-CASE WHEN yearid BETWEEN 1920 AND 1929 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 1930 AND 1939 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 1940 AND 1949 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 1950 AND 1959 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 1960 AND 1969 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 1970 AND 1979 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 1980 AND 1989 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 1990 AND 1999 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 2000 AND 2009 THEN ROUND(AVG(so/g),2)
-WHEN yearid BETWEEN 2010 AND 2019 THEN ROUND(AVG(so/g),2) END AS decade
-FROM teams
-GROUP BY teams.yearid
-
-
-SELECT ROUND(AVG(so/g),2)
-FROM teams
-WHERE yearid BETWEEN 1950 AND 1959
-
-SELECT ROUND(AVG(so/g),2)
-FROM batting
-WHERE yearid BETWEEN 1960 AND 1969
-
-SELECT ROUND(AVG(so/g),2)
-FROM batting
-WHERE yearid BETWEEN 2020 AND 2024
-
+GROUP BY decade
+--There are much more strikeouts. SO and HR seem to get higher averages the higher the decade
 
 -- 6. Find the player who had the most success stealing bases in 2016, where __success__ is measured as the percentage of stolen base attempts which are successful. (A stolen base attempt results either in a stolen base or being caught stealing.) Consider only players who attempted _at least_ 20 stolen bases.
-
+SELECT playerid, namefirst, namelast, SUM((sb*100)/sb+cs) AS sbs
+FROM batting
+LEFT JOIN people
+using (playerid)
+WHERE yearid = 2016
+GROUP BY batting.playerid, people.namefirst, people.namelast
 
 
 
