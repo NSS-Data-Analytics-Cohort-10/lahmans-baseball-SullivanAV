@@ -79,13 +79,15 @@ GROUP BY decade
 --There are much more strikeouts. SO and HR seem to get higher averages the higher the decade
 
 -- 6. Find the player who had the most success stealing bases in 2016, where __success__ is measured as the percentage of stolen base attempts which are successful. (A stolen base attempt results either in a stolen base or being caught stealing.) Consider only players who attempted _at least_ 20 stolen bases.
-SELECT playerid, namefirst, namelast, SUM((sb*100)/sb+cs) AS sbs
+SELECT playerid, namefirst, namelast, (sb*100)/sum(sb+cs) AS sbs
 FROM batting
 LEFT JOIN people
 using (playerid)
-WHERE yearid = 2016
-GROUP BY batting.playerid, people.namefirst, people.namelast
+Where (sb+cs)>= 20 AND yearid= 2016
+GROUP BY batting.playerid, people.namefirst, people.namelast, batting.sb
+ORDER BY sbs DESC
 
+--Chris Owings
 
 
 -- 7.  From 1970 – 2016, what is the largest number of wins for a team that did not win the world series? What is the smallest number of wins for a team that did win the world series? Doing this will probably result in an unusually small number of wins for a world series champion – determine why this is the case. Then redo your query, excluding the problem year. How often from 1970 – 2016 was it the case that a team with the most wins also won the world series? What percentage of the time?
