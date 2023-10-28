@@ -82,26 +82,30 @@ ORDER BY sbs DESC
 
 
 -- 7.  From 1970 – 2016, what is the largest number of wins for a team that did not win the world series?What is the smallest number of wins for a team that did win the world series? Doing this will probably result in an unusually small number of wins for a world series champion – determine why this is the case. Then redo your query, excluding the problem year. 
-with cte AS (SELECT w, l, teamid, yearid,
-CASE WHEN wswin = 'N' THEN 'No'
-WHEN wswin= 'Y' THEN 'Yes' END AS world_series, 
-CASE WHEN w>l AND wswin= 'Y' THEN 'wins'
-WHEN w>l AND wswin= 'N' THEN 'loss' END AS most_games_win
+with cte AS (SELECT yearid, (max(w))AS maxw
 FROM teams
 WHERE yearid BETWEEN 1970 AND 2016 AND yearid NOT IN (1981)
-ORDER BY w DESC)
-SELECT (SELECT COUNT(cte.most_games_win)AS ww
-FROM cte
-WHERE cte.most_games_win= 'wins'), 
-count(cte.most_games_win) AS ll
-FROM cte 
-WHERE cte.most_games_win='loss'
+GROUP BY yearid
+ORDER BY yearid DESC),
 
---116 most wins without winning the world series, 63 least amount of wins by world series winner
---How often from 1970 – 2016 was it the case that a team with the most wins also won the world series? What percentage of the time?
+cte2 AS (Select teamid, yearid, w, wswin
+		FROM teams
+		WHERE yearid BETWEEN 1970 AND 2016 AND yearid NOT IN (1981)
+		ORDER BY w desc)
+SELECT
+SUM(CASE WHEN wswin= 'Y' THEN 1 ELSE 0 END) AS total_wins,
+COUNT(DISTINCT cte.yearid), 
+ROUND(SUM(CASE WHEN wswin= 'Y' THEN 1 ELSE 0 END)/COUNT(DISTINCT cte.yearid)::numeric, 2)*100
+FROM cte2
+LEFT JOIN cte
+ON cte.yearid=cte2.yearid AND cte2.w=cte.maxw
+WHERE cte.maxw IS NOT NULL
 
+--116 most wins without winning the world series, 63 least amount of wins by world series winner, 26% of the time
 
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
+
+
 
 
 -- 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
