@@ -4,23 +4,17 @@ FROM pitching
 ORDER BY yearid ASC
 --Answer: 1871-2016
 
--- 2. Find the name and height of the shortest player in the database. 
-SELECT *
+-- 2. Find the name and height of the shortest player in the database. How many games did he play in? What is the name of the team for which he played?
+SELECT namefirst, namelast, teamid, height
 FROM people
-ORDER by height ASC
---Edward Carl: 43inches
-
---How many games did he play in? 
---1
-
---What is the name of the team for which he played?
-SELECT *
-FROM batting
+LEFT JOIN batting
+USING (playerid)
 WHERE playerid= 'gaedeed01'
---SLA
+ORDER by height ASC
+--Eddie Gaedel: 43inches games played= 1, team= SLA
 
 -- 3. Find all players in the database who played at Vanderbilt University. Create a list showing each player’s first and last names as well as the total salary they earned in the major leagues. Sort this list in descending order by the total salary earned. Which Vanderbilt player earned the most money in the majors?
-SELECT schoolname, namefirst, namelast, salary
+SELECT schoolname, namefirst, namelast, SUM(salary)AS sal
 FROM schools
 LEFT JOIN collegeplaying AS c
 USING (schoolid)
@@ -29,7 +23,8 @@ ON c.playerid=p.playerid
 LEFT JOIN salaries AS s
 ON p.playerid=s.playerid
 WHERE schoolname = 'Vanderbilt University' 
-ORDER BY salary DESC
+GROUP BY schools.schoolname, p.namefirst, p.namelast
+ORDER BY sal DESC
 --David Price
 
 -- 4. Using the fielding table, group players into three groups based on their position: label players with position OF as "Outfield", those with position "SS", "1B", "2B", and "3B" as "Infield", and those with position "P" or "C" as "Battery". Determine the number of putouts made by each of these three groups in 2016.
@@ -47,20 +42,6 @@ WHERE yearid= '2016'
 GROUP BY position
    
 -- 5. Find the average number of strikeouts per game by decade since 1920. Round the numbers you report to 2 decimal places. Do the same for home runs per game. Do you see any trends?
-SELECT
-CASE WHEN yearid BETWEEN 1920 AND 1929 THEN '20s'
-WHEN yearid BETWEEN 1930 AND 1939 THEN '30s'
-WHEN yearid BETWEEN 1940 AND 1949 THEN '40s'
-WHEN yearid BETWEEN 1950 AND 1959 THEN '50s'
-WHEN yearid BETWEEN 1960 AND 1969 THEN '60s'
-WHEN yearid BETWEEN 1970 AND 1979 THEN '70s'
-WHEN yearid BETWEEN 1980 AND 1989 THEN '80s'
-WHEN yearid BETWEEN 1990 AND 1999 THEN '90s'
-WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
-WHEN yearid BETWEEN 2010 AND 2019 THEN '2010s'
-END AS decade, ROUND(AVG(so/g),2)
-FROM teams
-GROUP BY decade
 
 SELECT
 CASE WHEN yearid BETWEEN 1920 AND 1929 THEN '20s'
@@ -73,9 +54,20 @@ WHEN yearid BETWEEN 1980 AND 1989 THEN '80s'
 WHEN yearid BETWEEN 1990 AND 1999 THEN '90s'
 WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
 WHEN yearid BETWEEN 2010 AND 2019 THEN '2010s'
-END AS decade, ROUND(AVG(hr/g),2)
+END AS decade, ROUND(AVG(so/g),2) AS so, CASE WHEN yearid BETWEEN 1920 AND 1929 THEN '20s'
+WHEN yearid BETWEEN 1930 AND 1939 THEN '30s'
+WHEN yearid BETWEEN 1940 AND 1949 THEN '40s'
+WHEN yearid BETWEEN 1950 AND 1959 THEN '50s'
+WHEN yearid BETWEEN 1960 AND 1969 THEN '60s'
+WHEN yearid BETWEEN 1970 AND 1979 THEN '70s'
+WHEN yearid BETWEEN 1980 AND 1989 THEN '80s'
+WHEN yearid BETWEEN 1990 AND 1999 THEN '90s'
+WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
+WHEN yearid BETWEEN 2010 AND 2019 THEN '2010s'
+END AS decade, ROUND(AVG(hr/g),2) AS hr
 FROM teams
 GROUP BY decade
+ORDER BY decade DESC
 --There are much more strikeouts. SO and HR seem to get higher averages the higher the decade
 
 -- 6. Find the player who had the most success stealing bases in 2016, where __success__ is measured as the percentage of stolen base attempts which are successful. (A stolen base attempt results either in a stolen base or being caught stealing.) Consider only players who attempted _at least_ 20 stolen bases.
@@ -89,22 +81,24 @@ ORDER BY sbs DESC
 --Chris Owings
 
 
--- 7.  From 1970 – 2016, what is the largest number of wins for a team that did not win the world series?
-SELECT w, teamid
+-- 7.  From 1970 – 2016, what is the largest number of wins for a team that did not win the world series?What is the smallest number of wins for a team that did win the world series? Doing this will probably result in an unusually small number of wins for a world series champion – determine why this is the case. Then redo your query, excluding the problem year. 
+with cte AS (SELECT w, l, teamid, yearid,
+CASE WHEN wswin = 'N' THEN 'No'
+WHEN wswin= 'Y' THEN 'Yes' END AS world_series, 
+CASE WHEN w>l AND wswin= 'Y' THEN 'wins'
+WHEN w>l AND wswin= 'N' THEN 'loss' END AS most_games_win
 FROM teams
-WHERE WSWin= 'N' AND yearid BETWEEN 1970 AND 2016
-ORDER BY w DESC
---116
+WHERE yearid BETWEEN 1970 AND 2016 AND yearid NOT IN (1981)
+ORDER BY w DESC)
+SELECT (SELECT COUNT(cte.most_games_win)AS ww
+FROM cte
+WHERE cte.most_games_win= 'wins'), 
+count(cte.most_games_win) AS ll
+FROM cte 
+WHERE cte.most_games_win='loss'
 
---What is the smallest number of wins for a team that did win the world series? 
-
---Doing this will probably result in an unusually small number of wins for a world series champion – determine why this is the case. 
-
---Then redo your query, excluding the problem year. 
-
---How often from 1970 – 2016 was it the case that a team with the most wins also won the world series? 
-
---What percentage of the time?
+--116 most wins without winning the world series, 63 least amount of wins by world series winner
+--How often from 1970 – 2016 was it the case that a team with the most wins also won the world series? What percentage of the time?
 
 
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
