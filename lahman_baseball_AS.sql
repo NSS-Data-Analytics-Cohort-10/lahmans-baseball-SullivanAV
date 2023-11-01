@@ -127,7 +127,7 @@ limit 5
 
 -- 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
 
-with cte as (SELECT awardsmanagers.playerid as p, awardid, awardsmanagers.lgid, teamid, namefirst, namelast
+with cte as (SELECT awardsmanagers.playerid as p, awardid, awardsmanagers.lgid, teamid, namefirst, namelast, managers.yearid as y
 FROM awardsmanagers
 INNER JOIN managers
 USING (lgid)
@@ -135,7 +135,7 @@ INNER JOIN people
 ON awardsmanagers.playerid= people.playerid
 WHERE awardid= 'TSN Manager of the Year' AND awardsmanagers.lgid = 'NL'),
 
-ctee AS (SELECT awardsmanagers.playerid as p, awardid, awardsmanagers.lgid, teamid, namefirst, namelast
+ctee AS (SELECT awardsmanagers.playerid as p, awardid, awardsmanagers.lgid, teamid, namefirst, namelast, managers.yearid as y
 FROM awardsmanagers
 INNER JOIN managers
 USING (lgid)
@@ -146,15 +146,15 @@ WHERE awardid= 'TSN Manager of the Year' AND awardsmanagers.lgid = 'AL')
 SELECT ctee.namefirst, ctee.namelast, ctee.teamid
 FROM ctee
 INNER JOIN cte
-ON ctee.p=cte.p
+ON ctee.p=cte.p AND ctee.y=cte.y
 
-with cte as (SELECT awardsmanagers.playerid, awardid, awardsmanagers.lgid, teamid
+with cte as (SELECT awardsmanagers.playerid, awardid, awardsmanagers.lgid, teamid, managers.yearid as y
 FROM awardsmanagers
 INNER JOIN managers
 USING (lgid)
 WHERE awardid= 'TSN Manager of the Year' AND awardsmanagers.lgid = 'NL'),
 
-ctee AS (SELECT playerid, awardid, lgid, namefirst, namelast
+ctee AS (SELECT playerid, awardid, lgid, namefirst, namelast, managers.yearid as y
 FROM awardsmanagers
 INNER JOIN people
 USING (playerid)
@@ -163,7 +163,7 @@ WHERE awardid= 'TSN Manager of the Year' AND awardsmanagers.lgid = 'AL')
 SELECT namefirst, namelast, teamid
 FROM ctee
 INNER JOIN cte
-ON ctee.playerid=cte.playerid
+ON ctee.playerid=cte.playerid AND ctee.yearid=cte.yearid
 
 --Jim Leyland and Davey Johnson
 
