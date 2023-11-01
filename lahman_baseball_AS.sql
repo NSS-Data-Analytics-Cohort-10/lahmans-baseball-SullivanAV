@@ -127,6 +127,46 @@ limit 5
 
 -- 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
 
+with cte as (SELECT awardsmanagers.playerid as p, awardid, awardsmanagers.lgid, teamid, namefirst, namelast
+FROM awardsmanagers
+INNER JOIN managers
+USING (lgid)
+INNER JOIN people
+ON awardsmanagers.playerid= people.playerid
+WHERE awardid= 'TSN Manager of the Year' AND awardsmanagers.lgid = 'NL'),
+
+ctee AS (SELECT awardsmanagers.playerid as p, awardid, awardsmanagers.lgid, teamid, namefirst, namelast
+FROM awardsmanagers
+INNER JOIN managers
+USING (lgid)
+INNER JOIN people
+ON awardsmanagers.playerid= people.playerid
+WHERE awardid= 'TSN Manager of the Year' AND awardsmanagers.lgid = 'AL')
+
+SELECT ctee.namefirst, ctee.namelast, ctee.teamid
+FROM ctee
+INNER JOIN cte
+ON ctee.p=cte.p
+
+with cte as (SELECT awardsmanagers.playerid, awardid, awardsmanagers.lgid, teamid
+FROM awardsmanagers
+INNER JOIN managers
+USING (lgid)
+WHERE awardid= 'TSN Manager of the Year' AND awardsmanagers.lgid = 'NL'),
+
+ctee AS (SELECT playerid, awardid, lgid, namefirst, namelast
+FROM awardsmanagers
+INNER JOIN people
+USING (playerid)
+WHERE awardid= 'TSN Manager of the Year' AND awardsmanagers.lgid = 'AL')
+
+SELECT namefirst, namelast, teamid
+FROM ctee
+INNER JOIN cte
+ON ctee.playerid=cte.playerid
+
+--Jim Leyland and Davey Johnson
+
 -- 10. Find all players who hit their career highest number of home runs in 2016. Consider only players who have played in the league for at least 10 years, and who hit at least one home run in 2016. Report the players' first and last names and the number of home runs they hit in 2016.
 
 
