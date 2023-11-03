@@ -127,7 +127,7 @@ limit 5
 
 -- 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
 --Final Code
-SELECT Distinct m.yearid, namefirst, namelast, m.teamid
+SELECT Distinct namefirst, namelast, m.teamid
 FROM awardsmanagers AS a
 JOIN awardsmanagers AS am
 USING (playerid)
@@ -177,7 +177,7 @@ INNER JOIN cte
 ON ctee.playerid=cte.playerid AND ctee.yearid=cte.yearid
 
 
-SELECT Distinct m.yearid, namefirst, namelast, m.teamid
+SELECT Distinct namefirst, namelast, m.teamid
 FROM awardsmanagers AS a
 JOIN awardsmanagers AS am
 USING (playerid)
