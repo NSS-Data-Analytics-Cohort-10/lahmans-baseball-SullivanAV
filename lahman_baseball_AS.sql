@@ -126,6 +126,17 @@ ORDER BY avg_atten ASC
 limit 5
 
 -- 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
+--Final Code
+SELECT Distinct m.yearid, namefirst, namelast, m.teamid
+FROM awardsmanagers AS a
+JOIN awardsmanagers AS am
+USING (playerid)
+INNER JOIN people AS p
+USING (playerid)
+INNER JOIN managers AS m
+USING (playerid) 
+WHERE a.awardid = 'TSN Manager of the Year' and am.awardid = 'TSN Manager of the Year' and ((am.lgid = 'AL' AND a.lgid = 'NL') OR (am.lgid = 'NL' AND a.lgid = 'AL')) AND m.yearid=a.yearid
+----Jim Leyland (Detroit, Pittsburgh) and Davey Johnson (Baltimore, Washington)
 
 with cte as (SELECT awardsmanagers.playerid as p, awardid, awardsmanagers.lgid, teamid, namefirst, namelast, managers.yearid as y
 FROM awardsmanagers
@@ -165,7 +176,32 @@ FROM ctee
 INNER JOIN cte
 ON ctee.playerid=cte.playerid AND ctee.yearid=cte.yearid
 
---Jim Leyland and Davey Johnson
+
+SELECT Distinct m.yearid, namefirst, namelast, m.teamid
+FROM awardsmanagers AS a
+JOIN awardsmanagers AS am
+USING (playerid)
+INNER JOIN people AS p
+USING (playerid)
+INNER JOIN managers AS m
+USING (playerid) 
+WHERE a.awardid = 'TSN Manager of the Year' and am.awardid = 'TSN Manager of the Year' and ((am.lgid = 'AL' AND a.lgid = 'NL') OR (am.lgid = 'NL' AND a.lgid = 'AL')) AND m.yearid=a.yearid
+
+SELECT *
+FROM managers
+FULL OUTER JOIN cte
+ON cte.lgid = managers.lgid AND managersid= cte.lgid
+
+
+INNER JOIN people
+on am.playerid=people.playerid and a.playerid=people.playerid
+INNER JOIN managers
+on am.playerid = managers.playerid and a.playerid=managers.playerid
+
+
+SELECT *
+FROM awardsmanagers
+WHERE awardid = 'TSN Manager of the Year' and lgid= 'AL'
 
 -- 10. Find all players who hit their career highest number of home runs in 2016. Consider only players who have played in the league for at least 10 years, and who hit at least one home run in 2016. Report the players' first and last names and the number of home runs they hit in 2016.
 
